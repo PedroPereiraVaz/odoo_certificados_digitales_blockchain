@@ -33,4 +33,47 @@
             </xpath>
         </field>
     </record>
+
+    <!-- List View for Blockchain Certificates -->
+    <record id="survey_user_input_view_tree_blockchain" model="ir.ui.view">
+        <field name="name">survey.user_input.view.list.blockchain</field>
+        <field name="model">survey.user_input</field>
+        <field name="arch" type="xml">
+            <list string="Certificados Blockchain" create="false" decoration-info="blockchain_status == 'pending'" decoration-success="blockchain_status == 'done'" decoration-danger="blockchain_status == 'error'">
+                <field name="survey_id" string="Curso/Certificación"/>
+                <field name="partner_id"/>
+                <field name="email" optional="hide"/>
+                <field name="create_date" string="Fecha Intento"/>
+                <field name="scoring_percentage" string="Puntaje"/>
+                <field name="blockchain_certificate_id"/>
+                <field name="blockchain_tx_hash"/>
+                <field name="blockchain_status" widget="badge" decoration-info="blockchain_status == 'pending'" decoration-success="blockchain_status == 'done'" decoration-danger="blockchain_status == 'error'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_survey_blockchain_certificates" model="ir.actions.act_window">
+        <field name="name">Certificados Blockchain</field>
+        <field name="res_model">survey.user_input</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="survey_user_input_view_tree_blockchain"/>
+        <field name="domain">[('blockchain_status', '!=', False)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay certificados emitidos aún.
+            </p>
+            <p>
+                Los certificados aparecerán aquí una vez que los alumnos aprueben sus exámenes de certificación.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item (Under Survey -> Participations) -->
+    <menuitem id="menu_survey_blockchain_certificates"
+              name="Certificados Blockchain"
+              parent="survey.menu_surveys"
+              sequence="50"
+              action="action_survey_blockchain_certificates"/>
 </odoo>
