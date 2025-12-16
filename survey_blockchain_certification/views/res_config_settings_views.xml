@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.blockchain</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="90"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Blockchain Certification" string="Blockchain Certification" name="survey_blockchain_certification">
+                    <block title="Blockchain Settings" name="blockchain_settings">
+                        <setting id="blockchain_config">
+                            <div class="row mt16">
+                                <label for="blockchain_rpc_url" class="col-lg-3 o_light_label"/>
+                                <field name="blockchain_rpc_url"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="blockchain_contract_address" class="col-lg-3 o_light_label"/>
+                                <field name="blockchain_contract_address"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="blockchain_wallet_private_key" class="col-lg-3 o_light_label"/>
+                                <field name="blockchain_wallet_private_key" password="True"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="blockchain_gas_limit" class="col-lg-3 o_light_label"/>
+                                <field name="blockchain_gas_limit"/>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

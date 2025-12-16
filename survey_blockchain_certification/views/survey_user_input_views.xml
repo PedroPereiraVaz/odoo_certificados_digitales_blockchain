@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="survey_user_input_view_form_inherit_blockchain" model="ir.ui.view">
+        <field name="name">survey.user_input.view.form.inherit.blockchain</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_retry_blockchain_registration"
+                        string="Retry Blockchain Registration"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="blockchain_status == 'done'"
+                        groups="base.group_system"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Blockchain" name="blockchain_page" invisible="not certification">
+                        <group>
+                            <group>
+                                <field name="blockchain_status"/>
+                                <field name="blockchain_certificate_id"/>
+                                <field name="blockchain_tx_hash" widget="CopyClipboardChar"/>
+                            </group>
+                            <group>
+                                <field name="blockchain_error_msg" 
+                                       invisible="blockchain_status != 'error'"
+                                       readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+</odoo>
