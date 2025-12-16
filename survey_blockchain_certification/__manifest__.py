@@ -1,14 +1,14 @@
 {
-    'name': 'Blockchain Certification for Surveys',
+    'name': 'Certificados digitales en Blockchain',
     'version': '18.0.1.0.0',
     'category': 'Marketing/Surveys',
-    'summary': 'Issue Ethereum certificates for passing surveys/courses',
+    'summary': 'Emitir certificados en Ethereum al aprobar encuestas/cursos',
     'description': """
-        Integrates Odoo with an Ethereum Smart Contract to issue academic certificates.
-        Features:
-        - Auto-issue certificate on survey pass.
-        - Store TX hash and Certificate ID.
-        - Retry mechanism for failed transactions.
+        Integra Odoo con un contrato inteligente (Smart Contract) de Ethereum para emitir certificados académicos.
+        Características:
+        - Emisión automática del certificado al aprobar una encuesta.
+        - Almacenamiento del hash de la transacción (TX) y del ID del certificado.
+        - Mecanismo de reintento para transacciones fallidas.
     """,
     'author': 'Pedro',
     'depends': ['base', 'survey'],

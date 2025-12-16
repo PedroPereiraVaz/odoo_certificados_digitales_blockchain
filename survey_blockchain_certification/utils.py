@@ -1,4 +1,4 @@
-# ABI extracted from the provided Solidity contract
+# ABI - Interfaz Binaria de Aplicación
 CONTRACT_ABI = [
     {
         "inputs": [],
