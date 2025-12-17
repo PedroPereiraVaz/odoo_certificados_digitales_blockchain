@@ -6,12 +6,7 @@
         <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                <button name="action_retry_blockchain_registration"
-                        string="Retry Blockchain Registration"
-                        type="object"
-                        class="oe_highlight"
-                        invisible="blockchain_status == 'done'"
-                        groups="base.group_system"/>
+
                 <button name="action_revoke_certificate"
                         string="Revoke Certificate"
                         type="object"
@@ -39,6 +34,20 @@
                                 <field name="blockchain_error_msg" 
                                        invisible="blockchain_status != 'error'"
                                        readonly="1"/>
+                                
+                                <separator string="Verification Data (From Blockchain)" colspan="2"/>
+                                <field name="blockchain_valid"/>
+                                <field name="blockchain_student_name"/>
+                                <field name="blockchain_course_name"/>
+                                <field name="blockchain_issuer_address"/>
+                                <field name="blockchain_issue_date"/>
+                                
+                                <button name="action_retry_blockchain_registration"
+                                        string="Retry Blockchain Registration"
+                                        type="object"
+                                        class="oe_highlight"
+                                        invisible="blockchain_status not in ('error', 'revoked')"
+                                        groups="base.group_system"/>
                             </group>
                         </group>
                     </page>

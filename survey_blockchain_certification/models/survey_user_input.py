@@ -30,6 +30,13 @@ class SurveyUserInput(models.Model):
         ('revoked', 'Revoked')
     ], string='Blockchain Status', default='pending', copy=False, readonly=True)
     blockchain_error_msg = fields.Text(string='Error Message', readonly=True, copy=False)
+    
+    # Campos de Verificación (Snapshot de la última verificación en cadena)
+    blockchain_valid = fields.Boolean(string='Is Valid on Chain', readonly=True, copy=False)
+    blockchain_student_name = fields.Char(string='Student Name (Chain)', readonly=True, copy=False)
+    blockchain_course_name = fields.Char(string='Course Name (Chain)', readonly=True, copy=False)
+    blockchain_issuer_address = fields.Char(string='Issuer Address (Chain)', readonly=True, copy=False)
+    blockchain_issue_date = fields.Datetime(string='Issue Date (Chain)', readonly=True, copy=False)
 
     # Agregado para soportar la lógica de vista 'invisible="not certification"'
     certification = fields.Boolean(related='survey_id.certification', string='Certification', readonly=True)
@@ -285,9 +292,25 @@ class SurveyUserInput(models.Model):
                         # Update status if it was revoked locally but valid on chain? Unlikely but possible.
                     else:
                         invalid_count += 1
+                    
+                    # Convert UNIX timestamp to Odoo Datetime
+                    issue_date_dt = False
+                    if result[4] > 0:
+                        from datetime import datetime
+                        issue_date_dt = datetime.fromtimestamp(result[4])
+
+                    record.write({
+                        'blockchain_valid': is_valid_chain,
+                        'blockchain_student_name': student_name_chain,
+                        'blockchain_course_name': course_name_chain,
+                        'blockchain_issuer_address': result[3],
+                        'blockchain_issue_date': issue_date_dt,
+                        'blockchain_error_msg': False if is_valid_chain else "Certificate Invalid on Chain"
+                    })
                         
                 except Exception as e:
                     errors.append(f"ID {record.blockchain_certificate_id}: {str(e)}")
+                    record.write({'blockchain_error_msg': f"Verification Error: {str(e)}"})
 
             # Notify user
             msg_type = 'success' if invalid_count == 0 and not errors else 'warning'
