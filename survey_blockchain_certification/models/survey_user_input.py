@@ -237,3 +237,74 @@ class SurveyUserInput(models.Model):
                 'blockchain_error_msg': str(e)
             })
             # Explícitamente NO lanzamos la excepción a Odoo para evitar rollback del estado 'done' de la encuesta.
+
+    def action_verify_on_blockchain(self):
+        """ Verifica el estado de los certificados seleccionados en la blockchain """
+        if not Web3:
+            raise UserError("Web3 library is not installed.")
+
+        params = self.env['ir.config_parameter'].sudo()
+        rpc_url = params.get_param('survey_blockchain_certification.blockchain_rpc_url')
+        contract_address = params.get_param('survey_blockchain_certification.blockchain_contract_address')
+        
+        if not rpc_url or not contract_address:
+            raise UserError(_("Blockchain configuration is missing."))
+
+        try:
+            w3 = Web3(Web3.HTTPProvider(rpc_url))
+            if not w3.is_connected():
+                raise UserError(_("Could not connect to RPC URL."))
+
+            checksum_address = Web3.to_checksum_address(contract_address)
+            contract = w3.eth.contract(address=checksum_address, abi=CONTRACT_ABI)
+
+            valid_count = 0
+            invalid_count = 0
+            errors = []
+
+            for record in self:
+                if not record.blockchain_certificate_id and record.blockchain_status != 'revoked':
+                    # Skip records that shouldn't have one (though 'revoked' might still have an ID to check)
+                    continue
+
+                try:
+                    # verifyCertificate returns (bool isValid, string studentName, string courseName, address issuer, uint256 issueDate)
+                    result = contract.functions.verifyCertificate(record.blockchain_certificate_id).call()
+                    is_valid_chain = result[0]
+                    student_name_chain = result[1]
+                    course_name_chain = result[2]
+
+                    # Basic Validation
+                    local_student = record.partner_id.name or record.email or "Unknown"
+                    local_course = record.survey_id.title or "Unknown Course"
+                    
+                    # Logica de coincidencia laxa para nombres podría ser necesaria, pero por ahora estricta o informativa
+                    
+                    if is_valid_chain:
+                        valid_count += 1
+                        # Update status if it was revoked locally but valid on chain? Unlikely but possible.
+                    else:
+                        invalid_count += 1
+                        
+                except Exception as e:
+                    errors.append(f"ID {record.blockchain_certificate_id}: {str(e)}")
+
+            # Notify user
+            msg_type = 'success' if invalid_count == 0 and not errors else 'warning'
+            message = _("Verification Complete.\nValid: %s\nInvalid/Revoked: %s") % (valid_count, invalid_count)
+            if errors:
+                message += "\nErrors: " + "; ".join(errors)
+            
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _("Blockchain Verification"),
+                    'message': message,
+                    'type': msg_type,
+                    'sticky': False,
+                }
+            }
+
+        except Exception as e:
+            raise UserError(_("Verification failed: %s") % str(e))
