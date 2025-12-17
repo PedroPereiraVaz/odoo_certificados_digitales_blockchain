@@ -14,6 +14,7 @@
     'depends': ['base', 'survey'],
     'data': [
         'views/res_config_settings_views.xml',
+        'views/survey_survey_views.xml',
         'views/survey_user_input_views.xml',
     ],
     'external_dependencies': {

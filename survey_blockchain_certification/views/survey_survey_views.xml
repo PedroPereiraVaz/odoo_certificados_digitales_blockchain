@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="survey_survey_view_form_inherit_blockchain" model="ir.ui.view">
+        <field name="name">survey.survey.view.form.inherit.blockchain</field>
+        <field name="model">survey.survey</field>
+        <field name="inherit_id" ref="survey.survey_survey_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='certification']" position="after">
+                <label for="blockchain_certification" string="Registrar en Blockchain" invisible="not certification"/>
+                <field name="blockchain_certification" invisible="not certification" nolabel="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

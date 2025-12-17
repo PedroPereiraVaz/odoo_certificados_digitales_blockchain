@@ -12,6 +12,13 @@
                         class="oe_highlight"
                         invisible="blockchain_status == 'done'"
                         groups="base.group_system"/>
+                <button name="action_revoke_certificate"
+                        string="Revoke Certificate"
+                        type="object"
+                        class="btn-danger"
+                        invisible="blockchain_status != 'done'"
+                        groups="base.group_system"
+                        confirm="Are you sure you want to revoke this certificate? This action cannot be undone on the blockchain."/>
             </xpath>
             <xpath expr="//sheet" position="inside">
                 <notebook>
@@ -52,13 +59,36 @@
         </field>
     </record>
 
+    <!-- Server Actions for Bulk Operations -->
+    <record id="action_server_retry_blockchain_registration" model="ir.actions.server">
+        <field name="name">Retry Blockchain Registration</field>
+        <field name="model_id" ref="model_survey_user_input"/>
+        <field name="binding_model_id" ref="model_survey_user_input"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            records.action_retry_blockchain_registration()
+        </field>
+    </record>
+
+    <record id="action_server_revoke_certificate" model="ir.actions.server">
+        <field name="name">Revoke Certificate</field>
+        <field name="model_id" ref="model_survey_user_input"/>
+        <field name="binding_model_id" ref="model_survey_user_input"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            records.action_revoke_certificate()
+        </field>
+    </record>
+
     <!-- Action -->
     <record id="action_survey_blockchain_certificates" model="ir.actions.act_window">
         <field name="name">Certificados Blockchain</field>
         <field name="res_model">survey.user_input</field>
         <field name="view_mode">list,form</field>
         <field name="view_id" ref="survey_user_input_view_tree_blockchain"/>
-        <field name="domain">[('blockchain_status', '!=', False)]</field>
+        <field name="domain">[('certification', '=', True), ('scoring_success', '=', True), ('survey_id.blockchain_certification', '=', True)]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
